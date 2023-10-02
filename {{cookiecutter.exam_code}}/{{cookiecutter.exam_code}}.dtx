@@ -1,10 +1,14 @@
 {# This is a Jinja2 template for a latex file.  Both use braces heavily! 
-    We use the raw ... endraw statements to surround untouched latex 
-    and we have to escape literal braces.
+    We use the raw ... endraw statements to surround untouched latex. 
+    We use the `embrace` filter to enclose an argument with braces. 
+    Braces can also be quoted with the `bgroup` and `egroup` variables
+    or with `{{ "{" }}` and  `{{ "}" }}`.
 #}
+{%- set bgroup = "{" -%}
+{%- set egroup = "}" -%}
 %<*driver>
 %%!TEX TS-program = dtxmake
-%%!TEX dtxmake-subengine = xelatexmk
+%%!TEX dtxmake-subengine = lualatexmk
 \input docstrip.tex
 \askforoverwritefalse
 \generate{
@@ -14,18 +18,26 @@
 \endbatchfile
 %</driver>
 %<*questions>
-\documentclass{{ "{" }}article{{ "}" }}
+\documentclass[11pt,addpoints
+%<solutions>,answers
+]{{ bgroup }}exam{{ egroup }}
 \ProvidesFile
 %<*dtx>
-{{ "{" }}{{cookiecutter.exam_code}}.dtx{{ "}" }}
+{{ (cookiecutter.exam_code + ".dtx") | embrace }}
 %</dtx>
-%<questions&!solutions>{{ "{" }}{{cookiecutter.exam_code}}.qns.tex{{ "}" }}
-%<questions&solutions>{{ "{" }}{{cookiecutter.exam_code}}.sol.tex{{ "}" }}
+%<questions&!solutions>{{ (cookiecutter.exam_code + ".qns.tex") | embrace }}
+%<questions&solutions>{{ (cookiecutter.exam_code + ".sol.tex") | embrace }}
     [{% now 'local', '%Y/%m/%d' %} v0.0 {{cookiecutter.course_name}}, {{cookiecutter.term_name}}, {{cookiecutter.exam_name}}]
-{% macro random_int() %}{% for n in [0,1,2,3,4,5,6] %}{{ [0,1,2,3,4,5,6,7,8,9]|random }}{% endfor %}{% endmacro %}
-\title{{ "{" }}{{cookiecutter.exam_name}}{{ "}" }}
-\author{{ "{" }}{{cookiecutter.course_name}}{{ "}" }}
-\date{{ "{" }}{{cookiecutter.exam_date | localize_date }}{{ "}" }}
+{% macro random_int() %}{% for n in [0,1,2,3,4,5,6] %}{{ [0,1,2,3,4,5,6,7,8,9]|random }}{% endfor %}{% endmacro -%}
+\title{{cookiecutter.exam_name | embrace }}
+\author{{cookiecutter.instructor_name | embrace }}
+\date{{cookiecutter.exam_date | localize_date | embrace }}
+{% raw -%}
+\makeatletter
+\newcommand{\course}[1]{\gdef\@course{#1}}
+\makeatother
+{% endraw -%}
+\course{{ cookiecutter.course_name | embrace }}
 {% raw %}
 \usepackage[insidebox
 %<solutions>,answers

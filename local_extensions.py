@@ -1,6 +1,13 @@
 from cookiecutter.utils import simple_filter
 from datetime import datetime
 
+@simple_filter
+def embrace(s:str) -> str:
+    """Enclose string with braces
+    
+    Useful to avoid lots of escaped braces in the template
+    """
+    return "{" + s + "}"
 
 @simple_filter
 def strftime(dts:str,format:str="%B %-d, %Y, %-i:%M %P") -> str:
