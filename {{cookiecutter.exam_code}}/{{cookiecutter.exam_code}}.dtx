@@ -30,7 +30,7 @@
     [{% now 'local', '%Y/%m/%d' %} v0.0 {{cookiecutter.course_name}}, {{cookiecutter.term_name}}, {{cookiecutter.exam_name}}]
 {% macro random_int() %}{% for n in [0,1,2,3,4,5,6] %}{{ [0,1,2,3,4,5,6,7,8,9]|random }}{% endfor %}{% endmacro -%}
 \title{{cookiecutter.exam_name | embrace }}
-\author{{cookiecutter.instructor_name | embrace }}
+\author{{cookiecutter.instructor_name | replace('. ', '.~') | embrace }}
 \date{{cookiecutter.exam_date | localize_date | embrace }}
 {% raw -%}
 \makeatletter
@@ -39,235 +39,781 @@
 {% endraw -%}
 \course{{ cookiecutter.course_name | embrace }}
 {% raw %}
-\usepackage[insidebox
-%<solutions>,answers
-,nowatermark
-]{automultiplechoice}
-\usepackage{ifxetex}
-\iftutex
-  \usepackage{fontspec}
-  \setmainfont{Frank Ruhl Libre}[
+\usepackage{amsmath,
+   amssymb,
+   changepage,%\checkoddpage,\ifoddpage
+   color,
+   comment,
+   graphicx,
+   multicol,
+   pdfpages,
+   tikz,
+   xstring
+}
+\usepackage{xpatch}
+% exam class settings
+\makeatletter
+\usepackage[sf,bf]{titlesec}% set section titles in bold sans
+\renewcommand{\maketitle}{
+\noindent%
+\edef\@TITLE{\uppercase{\@title}}%
+    \bgroup\sffamily\bfseries\color{DeepViolet}
+    \noindent\LARGE \@course \par
+    \noindent\Large \@author \par
+    \noindent\Huge  \@TITLE \par
+    \vskip1em
+    \noindent\large \@date \par\egroup
+    \vskip2em
+}
+\usepackage{xcolor-nyu22}
+\usepackage{fontspec}
+\setmainfont{Frank Ruhl Libre}[
     ItalicFont=*,
-    ItalicFeatures={FakeSlant}
-  ]
-  \setsansfont{Gotham Book}[
+    ItalicFeatures={FakeSlant},
+    SmallCapsFont={Latin Modern Roman Caps}
+]
+\setsansfont{Gotham Book}[
     BoldFont=Gotham Medium,
     ItalicFont=Gotham Book Italic
-  ]          
-\else
-  \usepackage[T1]{fontenc}
-  \usepackage[utf8]{inputenc}
-  \usepackage{mathptmx}
-  \usepackage{helvet}
-\fi
-\usepackage{titling}
-\usepackage{changepage}%      For the `adjustwidth' environment
-
-\usepackage{xcolor-nyu22}[2022/08/05]
-% In the contemporary/subtle tone quadrant, we use sans for the main text and
-% serif for the section titles.
-%
-% These font assignments have nothing to do with this package; they are part of
-% the styling of a document
-\usepackage{titlesec}
-\newcommand{\headingfont}{\sffamily\color{NyuViolet}}
-\titleformat*{\section}{\LARGE\headingfont}
-\titleformat*{\subsection}{\Large\headingfont}
-\titleformat*{\subsubsection}{\large\headingfont}
-\renewcommand{\maketitlehooka}{\headingfont}
-
-\usepackage{eso-pic}
-\usepackage{graphicx}
-\usepackage{etoolbox}
-\newsavebox{\logobox}
-\savebox{\logobox}{\includegraphics[]{nyu_short_black}}
-\makeatletter
-\renewcommand{\maketitle}{
-    \noindent\parbox{\textwidth}{%
-    \sffamily\color{UltraViolet}%
-    \Large\@author
-    \hfill\@title
-    \hfill\@date}
-    {\color{UltraViolet}\hrule\bigskip}
-    \AddToShipoutPictureBG*{%
-    \AtPageUpperLeft{%
-      \raisebox{-1.5\ht\logobox}{\hspace{0.5\ht\logobox}\usebox{\logobox}}
-      }%
-    }
-}
+]
+% Colored rule across non-first pages
+\runningheadrule
+\xpatchcmd{\run@fullhead}{\hrule}{\color{NyuViolet}\hrule}{}{\PatchFailed}
+\firstpageheader{\begin{tikzpicture}[remember picture, overlay]
+    \draw (current page.north west) ++ (0.25in,-0.25in) 
+        node[anchor=north west] (logo)
+        {\includegraphics[width=2.5in]{courant_short_black}};
+  \end{tikzpicture}%
+}{}{}
+\newcommand{\headerfont}{\sffamily\color{DeepViolet}}
+\usepackage{markversion}% Sets \VCRevisionMod and provides \UseVersionOf
+\runningheader
+    {\headerfont\@course\quad\headerfont\@title}
+    {}
+    {\headerfont\@date}
+\footer{\UseVersionOf{\jobname.tex},
+    \UseDateOf{\jobname.tex}}
+    {\thepage/\numpages}
+    {Revision \VCRevisionMod}
+\shadedsolutions % needs color package
+% multiple choice circles, needs tikz package
+%:TODO make more like AMC
+\tikzset{circled choice/.style={
+    draw=MediumViolet2,
+    shape=circle,
+    minimum size=1.25em,
+    inner sep=0pt,
+    thick,
+    text=LightViolet1,
+    font=\sffamily
+}}
+\newcommand*\circled[1]{\tikz[baseline=(char.base)]{%
+        \node[circled choice] (char) {#1};}}
+\renewcommand\choicelabel{\circled{\Alph{choice}}}
+\CorrectChoiceEmphasis{%
+    \tikzset{circled choice/.append style={fill=NyuViolet}}%
+    \color{NyuViolet}%
+    \bfseries}
+\renewcommand{\questionshook}{%
+    \settowidth{\leftmargin}{0pt}}
+\renewcommand{\choiceshook}{\settowidth{\leftmargin}{\circled{W}.\hskip\labelsep\hskip 0em}}
 \makeatother
-\usepackage{markversion}
-% end document style
+
+\setlength\linefillheight{36pt}
+\colorfillwithlines
+\colorlet{FillWithLinesColor}{MediumViolet2}
 
 
-
-\usepackage{tikz}
-\usetikzlibrary{MATH-UA-123-fall22}
-\AtBeginDocument{\AMCboxDimensions{shape=oval,down=1mm}}
-
-% Update the seed below to keep from copy & pasting the same one
-% from quiz to quiz.
-{% endraw -%}
-% This one was generated {% now 'local', '%c' %} 
-\def\randomseed{{ "{" }}{{ random_int () }}{{ "}" }}
-{% raw -%}
-\AMCrandomseed{\randomseed} 
-\pgfmathsetseed{\randomseed}
-\usepackage{leincalc-fall22}
-\usepackage{nicefrac}
-\usepackage{cancel}
-\usepackage{enumitem}
-\usepackage{multicol}
-\everymath{\displaystyle}
-
-% \scoringDefaultS should be declared in the preamble.
-\def\MCptval{2}
-\def\TFptval{1}
-\scoringDefaultS{e=0,v=0,b=(N==2 ? \TFptval : \MCptval),m=0}
-\scoringDefaultM{b=\MCptval/N}
-\AMCnumericOpts{scoreexact=1,scoreapprox=0}
+\newenvironment{instructions}{\noindent\sffamily\relax}{}
 
 
-% problem groups go here
-% Remember!
-% Question ID's cannot have dots in them, because then they become parts of multivalued fields.
-% Also, they are typeset in text mode, so they can't have TeX special characters like underscores, either.
-% Best: use a colon or hyphen to separate.
-\element{TF}{
-    \begin{question}{TF-cellphone}
-    Cell phones may be used in class if they are kept on silent.
-    \begin{choiceshoriz}[o]
-%        \correctchoice[T]{True}\wrongchoice[F]{False}
-        \wrongchoice[T]{True}\correctchoice[F]{False}
-    \end{choiceshoriz}
-\end{question}
-}
+% points of each multiple choice question
+\newcommand{\mcpoints}{3}
 
-\element{TF}{
-    \begin{question}{TF-Piazza}
-        The best place to ask (math) questions is the class's Piazza site.
-        \begin{choiceshoriz}[o]
-            \correctchoice[T]{True}
-            \wrongchoice[F]{False}
-        \end{choiceshoriz}
-    \end{question}
-}
 
-\element{TF}{
-    \begin{question}{TF-final}
-        The final is cumulative.
-        \begin{choiceshoriz}[o]
-            \correctchoice[T]{True}
-            \wrongchoice[F]{False}
-        \end{choiceshoriz}
-    \end{question}
-}
+\newcommand{\insertblankpage}{\newpage\par
+\begin{center}
+    (This page intentionally left blank. You may use it for scratch work.)
+\end{center}}
 
     
-\AMCboxColor{LightViolet1}
-\def\AMCbeginQuestion#1#2{\par\noindent{\bf Question #1} #2\hspace*{1em}}
+% other questions listed using bonus points so as not to affect total points
+\bonuspointpoints{point (other)}{points (other)}
+\newif\ifother
+\othertrue % \othertrue = print other questions (only if solutions are printed); \otherfalse = do not print other questions
 
+% Some definitions needed to show students how to shade the answers in multiple choice
+\newcommand*\samplecirc[1]{%
+    \begin{tikzpicture}[baseline=(C.base)]
+        \node[circled choice] (C) {#1};
+\end{tikzpicture}}
+\newcommand*\samplecircSoln[1]{%
+    \begin{tikzpicture}[baseline=(C.base)]
+        {\node[circled choice,fill=DarkGray] (C) {#1};} 
+\end{tikzpicture}}
+
+\usepackage{exam-randomizechoices}
+% https://www.random.org/integers/?num=1&min=1&max=9999999&col=1&base=10&format=plain&rnd=new
+\setrandomizerseed{9732931} 
+
+
+\newcommand{\tf}[1][{}]{%
+  \fillin[#1][2em]%
+}
+
+\usepackage{siunitx}% \qty command
+\usepackage{discrete}
+\usetikzlibrary{discrete}
+
+\usepackage{enumitem}
+\let\Cross\relax
+\usepackage{marvosym} %\StopSign
 
 
 \begin{document}
 
-\newenvironment{instructions}{\noindent\itshape}{}
+\vspace*{\fill}
 
-\onecopy{1}{
 \maketitle
-\bgroup
-% HEADER for name / section / ID
-\setlength{\parindent}{0pt}%
-%
-This paper will be scanned and read by optical mark reading software.
-Indicate your selections by filling in the circles \textbf{completely}.
-If you wish to change your selection, erase your marks completely.
-\bigskip
-
-\begin{minipage}{0.4\textwidth}
-    N Number:
-    \par\smallskip
-    \AMCcode{NNumber}{8}%
+{\setlength{\parindent}{0pt}%
+\begin{minipage}[b]{8cm}
+    \hfill\fbox{
+        \begin{minipage}{.9\linewidth}
+          Name:
+          \vspace*{.5cm}%\dotfill
+          \vspace*{.5cm}%\dotfill
+          \vspace*{1mm}
 \end{minipage}
-\hspace*{\fill}
-\begin{minipage}{0.6\textwidth}\raggedright
-    \namefield{\fbox{
-        \begin{minipage}{0.95\textwidth}
-            Name:
-            \vspace*{.5cm}%\dotfill
-            \vspace*{.5cm}%\dotfill
-            \vspace*{1mm}
-            \vspace{3ex} 
-        \end{minipage}
-    }}\medskip
-    \noindent
+  }\hfill\vspace{5ex}\end{minipage}\hspace*{\fill}
+}
+
+\bigskip
+\begin{instructions}%
+    \noindent{\textbf{\uppercase{READ THE FOLLOWING INFORMATION.}}}
+    
+    \begin{itemize}
+        \item You have \textbf{100 minutes} to finish this exam.
+        \item Fixed-response questions on this exam will be graded by computer.
+        Please fill in the circles completely and use pencil in case you want to
+        change your responses.  
+    
+        % \begin{center}
+        %     \begin{tabular}{ccc} 
+        %         \fbox{\includegraphics{omr2lt}}
+        %         & \fbox{\raisebox{0.5ex}{\includegraphics{omrgood}}}
+        %         & \fbox{\raisebox{-1ex}{\includegraphics{omrnox}}} \\
+        %         NO & YES & NO \\
+        %         Too light & & No crossouts
+        %     \end{tabular}
+        % \end{center}
+    
+        % Please do not write over the four dots at the corners of the pages, or the code
+        % at the top of each page.
+        \item Calculators, books, notes, blank scrap paper, and other aids are not allowed.
+        \item You may use the backs of the pages or the extra pages for scratch work.  
+        \textbf{\emph{Do not unstaple or remove pages}}.
+    \end{itemize}
+    
+    
+    %\begin{center}
+    %    \gradetable[h][questions]
+    % \begin{center}
+    %     \renewcommand\arraystretch{1.5}
+    %     \begin{tabular}{|c|c|c|} \hline
+    %         Question & Points & Score \\ \hline
+    %         Multiple Choice \firstqinrange{mc}--\lastqinrange{mc} & \pointsinrange{mc} &  \\ \hline
+    %         Free Response 11 & \pointsofquestion{11} &  \\ \hline
+    %         Free Response 12 & \pointsofquestion{12} &  \\ \hline
+    %         Free Response 13 & \pointsofquestion{13} &  \\ \hline
+    %         Free Response 14 & \pointsofquestion{14} &  \\ \hline
+    %         Free Response 15 & \pointsofquestion{15} &  \\ \hline
+    %         Total: & \numpoints & \\ \hline
+    %     \end{tabular}
+    %     \renewcommand\arraystretch{1}
+    % \end{center}
+    % \begin{tabular}{|r|*7{c|}}\hline
+    %     Question(s) & \firstqinrange{mc}--\lastqinrange{mc}
+    %                 & \firstqinrange{cata}--\lastqinrange{cata}
+    %                 & \firstqinrange{tfj}--\lastqinrange{tfj}
+    %                 & 19
+    %                 & 20
+    %                 & 21
+    %                 & Total \\\hline
+    %     Type        & MC 
+    %                 & CATA 
+    %                 & TFJ 
+    %                 & FR 
+    %                 & FR 
+    %                 & FR
+    %                 & \\\hline
+    %     Points      & \pointsinrange{mc}
+    %                 & \pointsinrange{cata}
+    %                 & \pointsinrange{tfj}
+    %                 & \pointsofquestion{19}
+    %                 & \pointsofquestion{20}
+    %                 & \pointsofquestion{21}
+    %                 & \numpoints \\\hline
+    % \end{tabular}
+    % \end{center}
+    
+    \newcommand{\mystop}{\raisebox{-0.5\totalheight}{\fontsize{50}{60}\color{Magenta}\selectfont\Stopsign}}
+    {\noindent\mystop
+    \hfill \textbf{\uppercase{Do not begin this exam until signaled to do so.}}
+    \hfill \mystop}
+    
+\end{instructions}
+
+\vfill
+\rule{\textwidth}{1pt}
+\emph{For office use only}
+\rule{0cm}{1cm}
+Check out: \rule{1in}{0.4pt}
+Check in: \rule{1in}{0.4pt}
+Finished: \rule{1in}{0.4pt}
+\newpage
+
+\checkoddpage\ifoddpage\insertblankpage\fi%
+
+\fullwidth{\section*{Multiple Choice}
+\begin{instructions}%
+    Shade the circles corresponding to your answers to the multiple choice
+    questions, as in the example below:
+    \begin{center}
+    \begin{minipage}{0.95\textwidth} 
+        \begin{itemize}
+            \item[\samplecirc{A}] Some answer
+            \item[\samplecircSoln{B}] The answer you think is correct
+            \item[\samplecirc{C}] Some answer
+            \item[\samplecirc{D}] Some answer
+            \item[\samplecirc{E}] Some answer
+        \end{itemize}
+    \end{minipage}  
+    \end{center}
+    \medskip
+    No explanation is required to be shown and no partial credit will be given
+    for the multiple choice questions.
+\end{instructions}}
+\begin{questions}
+    % \vspace*{-0.6in}
+
+    \begingradingrange{mc}
+    
+    \question[\mcpoints]\label{mcq-converse} The statement “All odd numbers are
+        prime” is the \fillin[converse] of the statement “All prime
+        numbers are odd.”
+        \begin{randomizechoices}
+            \CorrectChoice{converse}
+            \choice{contrapositive}
+            \choice{inverse}
+            \choice{covariant}
+            \choice{contravariant}
+        \end{randomizechoices}
+
+
+    \question[\mcpoints]\label{mcq-contrapositive} The \fillin[contrapositive] of
+        a statement is always equivalent to the original statement.
+        \begin{randomizechoices}
+            \CorrectChoice{contrapositive}
+            \choice{converse}
+            \choice{inverse}
+            \choice{covariant}
+            \choice{contravariant}
+        \end{randomizechoices}
+
+
+    \question[\mcpoints]\label{mcq-smallest-counterexample} Which of these is
+        the smallest counterexample to the statement “Every natural number is either
+        even or odd”?
+        \begin{randomizechoices}[keeplast]
+            \choice{\( 0 \)}
+            \choice{\( 1 \)}
+            \choice{\( -1 \)}
+            \choice{\( -\infty \)}
+            \CorrectChoice{There is no smallest counterexample}
+        \end{randomizechoices}
+        \begin{solution}
+            Since the statement is true, there are no counterexamples!
+        \end{solution}
+
+
+    \question[\mcpoints]\label{mcq-pmi} In proving a statement
+        by induction, which of these is NOT a step in the proof?
+        \begin{randomizechoices}
+            \choice{Construct the set $A$ of all natural numbers satisfying the statement.}
+            \choice{Prove $0 \in A$.}
+            \choice{Prove $\forall n \in \N,\ n \in A \implies n+1 \in A$.}
+            \CorrectChoice{Prove $n+1 \in A$.}
+            \choice{Invoke the Principle of Mathematical Induction to conclude $A = \N$.}
+        \end{randomizechoices}
+        \begin{solution}
+            We must first assume $n \in A$ for some $n$, then prove $n+1 \in A$.
+        \end{solution}
+
+
+    \question[\mcpoints]\label{mcq-pci}% Scheinerman, Exercise 22.16(e)
+        Consider the sequence $(a_n)$ defined by $a_0 = 1$, $a_1 = 4$,
+        and $a_n = 4(a_{n-1}-a_{n-2})$ for all $n \geq 2$.
+        To prove $a_n = (n+1)2^n$, we should use \fillin.
+        \begin{randomizechoices}
+            \CorrectChoice{Strong induction with two base cases}
+            \choice{Regular induction with two base cases}
+            \choice{Strong induction with one base case}
+            \choice{Regular induction with one base case}
+            \choice{Transfinite induction with one base case}
+        \end{randomizechoices}
+        \begin{solution}
+            Since the inductive step will require a “lookback” of two steps, 
+            we should use strong induction and two base cases.
+        \end{solution}
+
+
+    \question[\mcpoints]\label{mcq-function}
+        Suppose $A$ and $B$ are sets and $R$ is a relation from $A$ to $B$.
+        Which of these conditions MUST be satisfied for $R$ to be a function?
+        \begin{choices}
+            \CorrectChoice{$\forall a,b,c$, $(a,b) \in R \land (a,c)\in R \implies b=c$}
+            \choice{$\forall a \in A$, $\exists b\in B$ such that $(a,b) \in R$}
+            \choice{$\forall b \in B$, $\exists a\in A$ such that $(a,b) \in R$}
+            \choice{$\forall a,b,c$, $(a,b) \in R \land (b,c)\in R \implies (a,c)\in R$}
+            \choice{$\forall a,b,c$, $(a,b) \in R \land (c,b)\in R \implies a=c$}
+        \end{choices}
+        \begin{solution}
+            \begin{itemize}
+                \item $\forall a,b,c$, $(a,b) \in R \land (a,c)\in R \implies
+                    b=c$ is the “vertical line test”; i.e., the fundamental
+                    condition for a relation to be a function.
+                \item If $R$ is a function, $\forall a \in A$, $\exists b\in B$
+                    such that $(a,b) \in R$ is the condition that $R$ is a
+                    function from $A$ to $B$.
+                \item If $R$ is a function from $A$ to $B$, $\forall b \in B$,
+                    $\exists a\in A$ such that $(a,b) \in R$ is the condition
+                    that $R$ is onto $B$.
+                \item If $R$  is a function, $\forall a,b,c$, $(a,b) \in R \land
+                    (c,b)\in R \implies a=c$ is the condition that $R$ be injective.
+            \end{itemize}
+        \end{solution}
+    
+    \question[\mcpoints]\label{mcq-function-pairs}
+        Let $R = \set{(1,2),(3,3),(b,2)}$
+        Which value of $b$ would NOT make $R$ into a function?
+        \begin{randomizechoices}
+            \CorrectChoice{\( 3 \)}
+            \choice{\( 1 \)}
+            \choice{\( 4 \)}
+            \choice{\( 2 \)}
+            \choice{\( 0 \)}
+        \end{randomizechoices}
+        \begin{solution}
+            If $b=0$, $b=2$, or $b=4$, there are three pairs in $R$ with distinct first elements. 
+            If $b=1$, $R = \set{(1,2),(3,3)}$ and that is a function.
+            If $b=3$, however, we have $(3,3)$ and $(3,2)$ in $R$.
+        \end{solution}
+        
+
+    \question[\mcpoints]\label{mcq-counting-funcs}
+        Let $A = \set{1,2,3,4}$ and $B = \set{4,5}$.
+        How many injective functions are there from $B$ to $A$?
+        \begin{randomizechoices}
+            \CorrectChoice{\( 12 \)}
+            \choice{\( 0 \)}% number of injective functions $B \to A$
+            \choice{\( 16 \)}% number of functions $B \to A$
+            \choice{\( 14 \)}% number of surjective functions $A \to B$
+            \choice{\( 24 \)}% number of injective functions $A \to A$
+        \end{randomizechoices}
+        \begin{solution}
+            By Theorem 24.26(2), the number is $(4)_2 = 4 \times 3 = 12$.
+        \end{solution}
+
+        
+    \question[\mcpoints]\label{mcq-surjective}
+        Which of these functions \( f \from \Z \to \Z \) is surjective?
+        \begin{randomizechoices}
+            \CorrectChoice{\( f(x) = -x + 1 \)}
+            \choice{\( f(x) = 2x+1 \) }
+            \choice{\( f(x) = x^3 \)}
+            \choice{\( f(x) = |x| \)}
+            \choice{\( f(x) = x^2 \)}
+        \end{randomizechoices}
+
+        
+    \question[\mcpoints]\label{mcq-php} Consider the statement “In any set
+        of five integers, there must be at least two whose difference is
+        divisible by 4.”
+
+        This most directly follows from the \fillin.
+        \begin{randomizechoices}
+            \CorrectChoice{Pigeonhole Principle}
+            \choice{Addition Rule}
+            \choice{Multiplication Rule}
+            \choice{Binomial Theorem}
+            \choice{Erd\H os-Szekeres Theorem}
+        \end{randomizechoices}
+        \begin{solution}
+            Consider the function which assigns to each of the integers its
+            equivalence class in the congruence-modulo-$4$ relation. There
+            are only four classes, so by the \emph{pigeonhole principle} two
+            of the integers must belong to the same one. By definition,
+            their difference is divisible by $4$.
+        \end{solution}
+        
+    \endgradingrange{mc}
+    
+    \newpage%
+    \begingradingrange{cata}
+
+    \fullwidth{
+        
+    \section*{Check All That Apply}
+    
+    \begin{instructions}%
+        In the next four questions, more than one option \textbf{may} be correct.
+        You must select all correct options and none of the incorrect options to
+        earn full credit.
+    \end{instructions}}
+
+
+        \question[5]\label{msq-wop}
+            Which of these sets are well-ordered?
+            \begin{randomizechoices}
+                \CorrectChoice{\( \setst{x \in \Z}{x \geq 0} \)}
+                \CorrectChoice{\( \setst{x \in \Z}{x > 0} \)}
+                \CorrectChoice{\( \setst{x \in \Z}{x \geq 0,\ 2 \mid x} \)}
+                \choice{\( \setst{x \in \Z}{x \neq 0} \)}
+                \choice{\( \setst{x \in \Q}{x > 0} \)}
+            \end{randomizechoices}
+            \begin{solution}
+                An ordered set is called \textbf{well-ordered} provided every nonempty subset has a least element.
+                \begin{itemize}
+                    \item \( \setst{x \in \Z}{x \geq 0} = \mathbb{N}\) is
+                        well-ordered, by axiom.
+                    \item \( \setst{x \in \Z}{x > 0} \) is a subset of \(\N\),
+                        so it's also well-ordered.
+                        \item \( \setst{x \in \Z}{x \geq 0,\ 2 \mid x} \) is a subset of \(\N\).
+                        \item \( \setst{x \in \Z}{x \neq 0} \) is not well-ordered;
+                        it contains arbitrarily large negative numbers.
+                    \item \( \setst{x \in \Q}{x > 0} \) is not well-ordered;
+                        it contains arbitrarily \emph{small} positive numbers, but not zero.
+                        So the set itself has no minimum.
+                \end{itemize}
+            \end{solution}
+
+
+        \question[5]\label{msq-compositions} Suppose $S$ is a finite set, $n
+            \colon 2^S\to \N$ is the “cardinality” function defined by $n(A) =
+            |A|$, and $c\colon 2^S \to 2^S$ is the “complement” function defined
+            by $c(A) = S \setdiff A$.  
+            Which of these compositions is defined?
+            \begin{randomizechoices}
+                \CorrectChoice{$n \comp c$}
+                \CorrectChoice{$c \comp c$}
+                \CorrectChoice{$\mathord{\mathrm{id}}_{\N}\comp n$}
+                \choice{$n \comp \mathord{\mathrm{id}}_{\N}$}% caught 33%!
+                \choice{$c \comp n$}% caught 23%
+            \end{randomizechoices}
+            \begin{solution}
+                In order for the composition $f \comp g$ to be defined, the range of $g$ needs to be contained 
+                in the domain of $f$. Remember that the composition goes right-to-left.                    
+            \end{solution}
+
+
+        \question[5]\label{msq-injective}
+            Which of these are injective functions?
+            \begin{randomizechoices}
+                \CorrectChoice{\( f \from \N \to \N$, $f(x) = x^2 \)}
+                \CorrectChoice{\( \IdentityFunction[\Z] \)}
+                \CorrectChoice{\( \emptyset \)}
+                \choice{\( f \from \Z \to \Z$, $f(x) = x^2 \)}% not injective on this domain
+                \choice{\( \set{(1,2), (2,3), (3,1), (1,4)} \)}% not a function
+            \end{randomizechoices}
+            \begin{solution}
+                \begin{itemize}
+                    \item \( f \from \N \to \N$, $f(x) = x^2 \) is injective: if
+                        $a^2 = b^2$ for nonnegative integers $a$ and $b$, then
+                        $a=b$.
+                    \item \( \IdentityFunction[\Z] \) is injective: If $(a,b)
+                        \in \IdentityFunction[\Z]$, then $a=b$. So if two pairs
+                        $(a,b)$ and $(c,b)$ are in $\IdentityFunction[\Z]$, then
+                        $a=b=c$.
+                    \item \( \emptyset \) is injective, vacuously.
+                    \item \( f \from \Z \to \Z$, $f(x) = x^2 \) is not
+                        injective, because it contains the pairs $(-1,1)$ and
+                        $(1,1)$.
+                    \item \( \set{(1,2), (2,3), (3,1), (1,4)} \) is not a
+                        function, let alone an injective function.
+                \end{itemize}
+            \end{solution}
+
+
+        \question[5]\label{msq-composition}
+            Suppose \( f = \set{ (1,2), (2,3), (3,4) }\)
+            and \( g = \set{ (1,3), (2,4), (3,2) (4,1) }\).
+            Which of these pairs are in \( g \comp f \)?
+            \begin{randomizechoices}
+                \CorrectChoice{$(1,4)$}
+                \CorrectChoice{$(2,2)$}
+                \choice{$(1,2)$}
+                \choice{$(2,4)$}
+                \choice{$(3,3)$}
+            \end{randomizechoices}
+            \begin{solution}
+                We have \(
+                    g \comp f = \set{
+                        (1,4), (2,2), (3,1)
+                    }  
+                \)
+            \end{solution}
+
+        \endgradingrange{cata}
+
+
+        \newpage
+        \begingradingrange{tfj}
+    \fullwidth{\section*{True/False}
+    \begin{instructions}%
+        In each of the next four problems, indicate if the statement is true (T) or false (F).
+        If the statement is true, give a short justification.
+        If the statement is false, provide a counterexample or explain why.
+    \end{instructions}}
+
+        \question[3]
+            \tf[T] Every integer is either even or odd.
+
+            \begin{solution}
+                This is Corollary~21.2 from the textbook, proved in class.
+            \end{solution}
+        \vspace{\stretch{1}}
+
+        \question[3]\tf[F]
+            Some statements cannot be proven with regular induction;
+            they require strong induction.
+
+            \begin{solution}
+                Any statement that can be proven with strong induction can also
+                be proven with regular induction.
+            \end{solution}
+
+        \vspace{\stretch{1}}
+        
+        \newpage\question[3]\tf[F] 
+        If $f$ and $g$ are bijections from a set $A$ to itself, then $f \comp g = g \comp f$.
             
-\end{minipage}
-\hspace*{\fill}
-\bigskip
+            \begin{solution}
+                A counterexample is $A = \set{1,2,3}$, $f =
+                \set{(1,2),(2,3),(3,1)}$ and $g = \set{(1,2),(2,1),(3,3)}$. Then
+                $f \comp g = \set{(1,3),(2,2),(3,1)}$ and $g \comp f =
+                \set{(1,1),(2,3),(3,2)}$.
+            \end{solution}
 
-This is a 20-minute quiz.  There are problems on the front and on the back.
-\emph{Calculators are neither necessary nor allowed.}
-% end of header group
-\egroup
+        \vspace{\stretch{1}}
+
+        \question[3]\tf[T]
+            Zero is a natural number.
+
+            \begin{solution}
+                We have defined (see Appendix~D of the textbook) $\N$ to be the
+                set of all nonnegative integers.
+            \end{solution}
+        \vspace{\stretch{1}}   
+        \endgradingrange{tfj}
+
+    \checkoddpage\ifoddpage\insertblankpage\fi%
+    \newpage%
+    \begingradingrange{sa}%
+    \fullwidth{\section*{Short Answer}
+    \begin{instructions}%
+        In each of the following, write the \textbf{beginning} (first one or two sentences) of a
+        proof by contrapositive or contradiction, as indicated.
+        % \begin{itemize}
+        %     \item In the case of a proof by \textbf{contrapositive}, you should include what is
+        %     to be assumed and what you wish to prove.
+        %     \item In the case of a proof by \textbf{contradiction}, you should include what is to
+        %     be assumed for the sake of contradiction.
+        % \end{itemize}
+        Any terms or symbols you don't recognize are made up for the purpose of this
+        problem.
+    \end{instructions}}
+
+        \question[3] For all integers $x$ and $y$, if $x$ and $y$ are weak, then
+    $x \oplus y$ is weak. (contradiction)
+
+        Suppose for the sake of contradiction that $\dots$
+        \begin{solutionorlines}[\stretch{1}]
+            there exist integers $x$ and $y$ such that $x$ and $y$ are weak 
+            but $x \oplus y$ is not weak.
+        \end{solutionorlines}
     
-\bigskip
+        \question[3] For all sets $A$, 
+            if $A \ltimes A = \emptyset$, then $A = \emptyset$. (Contrapositive)
 
 
-\begin{question}{MC-final}
-    On which of these dates is the final exam?
-    \begin{choices}
-        \correctchoice{Tuesday, December 18}% correct
-        \wrongchoice{Wednesday, December 19}% calculus exams
-        \wrongchoice{Monday, December 17}% review session
-        \wrongchoice{Thursday, December 20}% commencement
-        \wrongchoice{Friday, December 14}% last day of class
-    \end{choices}
-\end{question}
+        Suppose that $\dots$
+        \begin{solutionorlines}[\stretch{1}]
+            \( A \neq \emptyset \)
+        \end{solutionorlines}
+        We will show $\dots$
+        \begin{solutionorlines}[\stretch{1}]
+            \( A \ltimes A \neq \emptyset \).
+        \end{solutionorlines}
 
+        \newpage
+        \question[3]
+            If $x$ is a real number such that $x \mathrel{\square} y  = \epsilon$,
+            for all real numbers $y$, then $x = \epsilon$. (contrapositive)
 
-\begin{questionmult}{MC-cheating}
-    Which of these are examples of academic dishonesty?
-    \begin{choices}
-        \correctchoice{Copying the homework of another student without collaboration and citation}
-        \correctchoice{Falsifying documents to justify makeup exams}
-        \correctchoice{Placing an ad on craiglist seeking someone to take your exam}
-        \correctchoice{Asking homework questions on Yahoo! Answers and using answers found there as your own work}
-    \end{choices}
-\end{questionmult}
-
-\noindent\emph{Identify each of the following statements as true or false.}
-
-\shufflegroup{TF}
-\insertgroup{TF}
-
-\clearpage
-
-\begin{question}{FR-why}
-    Why are you taking this course?  What would you like to learn?
-    \AMCOpen{lines=6,dots=false,answer={%
-        }
-    }{
-        \wrongchoice[0]{0}\scoring{0}
-        \wrongchoice[1]{1}\scoring{1}
-        \correctchoice[2]{2}\scoring{2}
-    }    
-\end{question}
-
-\begin{question}{FR-map}
-    Draw a map of your home town, and indicate on the map where you live.
-    \AMCOpen{lines=7,dots=false,answer={%
-        }
-    }{
-        \wrongchoice[0]{0}\scoring{0}
-        \wrongchoice[1]{1}\scoring{1}
-        \wrongchoice[2]{2}\scoring{2}
-        \correctchoice[3]{3}\scoring{3}
-    }    
-\end{question}
-
+            Suppose that $\dots$
+            \begin{solutionorlines}[\stretch{1}]
+                $x$ is a real number not equal to $\epsilon$.
+            \end{solutionorlines}
+            We will show $\dots$
+            \begin{solutionorlines}[\stretch{1}]
+                There exists a real number $y$ such that $x \mathrel{\square} y
+                \neq \epsilon$.
+            \end{solutionorlines}
+            
+        \question[3] 
+            For all grains $x$ there exists a grain $y$ such that $x \sqcup y$ is total.
+        (contradiction)
     
-}% end of \onecopy group
+            Suppose for the sake of contradiction that $\dots$
+            \begin{solutionorlines}[\stretch{1}]
+                there exist a grain $x$ such that for all grains $y$,
+                $x \sqcup y$ is not total.
+            \end{solutionorlines}
+                
+    \endgradingrange{sa}%
+        
+
+    \checkoddpage\ifoddpage\insertblankpage\fi%
+    \newpage%
+    \begingradingrange{fr}%
+    \fullwidth{\section*{Free Response}
+
+    \begin{instructions}%
+        The remaining questions are free response questions.  Put your
+        answers in the boxes (where provided) and your work/explanations in the
+        space below the problem.  
+    
+        \begin{itemize}
+            \item \textbf{\emph{Read and follow the instructions of every problem.}}  
+            \item Show all of your work for purposes of partial credit.  
+            \textbf{\emph{Full credit may not be given for an answer alone.  }}
+            \item Justify your answers.  \textbf{\emph{Full sentences are not necessary}}
+            but English words help.
+            \item Do not use the three-dots notation ($\therefore$ or $\because$); it
+            is non-idiomatic and hard to read.
+        \end{itemize}
+    \end{instructions}}
+
+    \question\label{frq-surjinj}
+    Suppose that $A$ and $B$ are sets, and $f \from A \to B$ and $g \from B \to A$ 
+    are functions such that $g \comp f = \IdentityFunction[A]$.
+    \begin{parts}
+        \part[6]\label{frq-composition-inj-surj}
+            Prove that $f$ is injective and $g$ is surjective.
+
+            \begin{solution}
+                Suppose there exist $a_1, a_2 \in A$ such that $f(a_1) = f(a_2)$.
+                Then $g(f(a_1)) = g(f(a_2))$.
+                But $(g \comp f)(a_1) = \IdentityFunction[A](a_1) = a_1$, 
+                and $(g \comp f)(a_2) = \IdentityFunction[A](a_1) = a_2$, 
+                so $a_1 = a_2$.
+                Therefore, $f$ is injective.
+
+                Now suppose $a \in A$; we want to find $b \in B$ such that $g(b) =a$.
+                Let $b = f(a)$. Then
+                \[
+                    g(b) =g(f(a)) = \IdentityFunction[A](a) = a
+                \]
+                which is what we want.
+
+            \end{solution}
+
+        \vspace{\stretch{2}}
+
+
+        \part[4] Give an example of the above scenario in which neither $f$ nor $g$ is a bijection.
+
+        \begin{solution}
+            Answers may vary. Here is one:
+            Let $A = \set{1}$, $B=\set{1,2}$, $f=\set{(1,1)}$, and $g = \set{(1,1),(2,1)}$.
+            Then $f \from A \to B$ is not surjective, and $g \from B \to A$ is not injective.
+            But $g \comp f = \set{(1,1)} = \IdentityFunction[A]$.
+        \end{solution}
+        \vspace{\stretch{1}}
+    \end{parts}
+
+
+    \checkoddpage\ifoddpage\insertblankpage\fi\newpage
+    \question\label{frq-kq}
+        We will prove this claim: \emph{for all positive integers \(n\) there exist 
+        unique $k,q \in \N$ such that $q$ is odd and $n=2^k q$.}
+
+        \begin{parts}
+
+            \part[4]
+            Fill in the table to check a few cases:
+            \begin{center}
+                \renewcommand{\arraystretch}{2}%
+                \begin{tabular}{|c|c|c|}\hline
+                    $n$ & $k$ & $q$ \\\hline
+                    20 & \fillin[2] & \fillin[5]\\
+                    21 & \fillin[0] & \fillin[21]\\
+                    22 & \fillin[2] & \fillin[11]\\
+                    23 & \fillin[1] & \fillin[23]\\\hline
+                \end{tabular}    
+            \end{center}
+        
+            \part[8]
+                Prove \emph{by strong induction} the “existence” part of the statement.
+                Hint: every integer is either even or odd.
+
+                \begin{solution}
+                    We use strong induction. The base case $n=1$ is satisfied by
+                    $k=0$ and $q=1$.
+
+                    Now suppose there exists $n$ such that for all integers $m$ 
+                    satisfying $1 \leq m < n$, there exist $k$ and $q$ as above.
+                    Consider $n$.
+
+                    \begin{itemize}
+                        \item If $n$ is odd, $n=2^k q$ is satisfied by $k=0$ and $q=n$.
+                        \item If $n$ is even, then there exists $m$ such that $n = 2m$.
+                            Since $1 \leq m < n$, there exist $k'$ and $q'$ such that
+                            $m=2^{k'}q'$. Then $n = 2^{k'+1}q'$, so we can set $k = k'+1$
+                            and $q=q'$ to satisfy the claim for $n$.
+                    \end{itemize}
+
+                    Therefore by strong induction, all positive integers $n$ satisfy the claim.
+                \end{solution}
+                \vspace{\stretch{1}}
+
+            \newpage
+            \part[4]
+                Prove \emph{by contradiction} the “uniqueness” part of the claim:
+                for all $n$ the pair $(k,q)$ is unique.
+
+                Hint: no integer is \emph{both} even and odd.
+
+                \begin{solution}
+                    Suppose there exist $(k,q)$ and $(k',q')$ such that $n = 2^k
+                    q = 2^{k'}q'$. Either $k \leq k'$ or vice versa; we will
+                    assume the former. We have
+                    \[
+                        2^{k}q = 2^{k'}q' 
+                        \implies  2^k(2^{k'-k}q) = q'
+                    \]
+                    The left-hand side is even, while the right-hand side is odd.
+                    This is a contradiction.
+                \end{solution}
+                \vspace{\stretch{1}}
+        \end{parts}
+    
+        \newpage\checkoddpage\ifoddpage\insertblankpage\fi
+        \newpage\insertblankpage
+
+
+    % Delete/disable the line below to end the exam
+    \end{questions}
 \end{document}
-{% endraw %}   
 %</questions>
+{% endraw %}
