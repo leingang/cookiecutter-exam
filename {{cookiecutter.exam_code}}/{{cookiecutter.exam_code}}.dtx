@@ -193,9 +193,10 @@
 % from exam to exam.
 {% endraw -%}
 % This one was generated {% now 'local', '%c' %} 
-\def\randomseed{{ "{" }}{{ random_int () }}{{ "}" }}
+\def\randomseed{{ random_int() | embrace }}
 {% raw -%}
-\setrandomizerseed{\randomseed} 
+\setrandomizerseed{\randomseed}
+\pgfmathsetseed{\randomseed}
 
 
 \newcommand{\tf}[1][{}]{%
