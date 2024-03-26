@@ -6,6 +6,7 @@
 #}
 {%- set bgroup = "{" -%}
 {%- set egroup = "}" -%}
+{% macro random_int() %}{% for n in [0,1,2,3,4,5,6] %}{{ [0,1,2,3,4,5,6,7,8,9]|random }}{% endfor %}{% endmacro %}
 %<*driver>
 %%!TEX TS-program = dtxmake
 %%!TEX dtxmake-subengine = lualatexmk
@@ -188,8 +189,13 @@
 \end{tikzpicture}}
 
 \usepackage{exam-randomizechoices}
-% https://www.random.org/integers/?num=1&min=1&max=9999999&col=1&base=10&format=plain&rnd=new
-\setrandomizerseed{9732931} 
+% Update the seed below to keep from copy & pasting the same one
+% from exam to exam.
+{% endraw -%}
+% This one was generated {% now 'local', '%c' %} 
+\def\randomseed{{ "{" }}{{ random_int () }}{{ "}" }}
+{% raw -%}
+\setrandomizerseed{\randomseed} 
 
 
 \newcommand{\tf}[1][{}]{%
