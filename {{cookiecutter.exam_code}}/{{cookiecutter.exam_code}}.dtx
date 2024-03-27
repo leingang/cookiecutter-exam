@@ -6,15 +6,25 @@
 #}
 {%- set bgroup = "{" -%}
 {%- set egroup = "}" -%}
-{% macro random_int() %}{% for n in [0,1,2,3,4,5,6] %}{{ [0,1,2,3,4,5,6,7,8,9]|random }}{% endfor %}{% endmacro %}
+{%- macro random_int() %}{% for n in [0,1,2,3,4,5,6] %}{{ [0,1,2,3,4,5,6,7,8,9]|random }}{% endfor %}{% endmacro -%}
+{%- if cookiecutter.has_versions == 'y' -%}
+{%- set versions = cookiecutter.versions_csv.split(',') -%}
+{%- endif -%}
 %<*driver>
 %%!TEX TS-program = dtxmake
 %%!TEX dtxmake-subengine = lualatexmk
 \input docstrip.tex
 \askforoverwritefalse
 \generate{
+{%- if versions -%}
+{%- for v in versions %}
+    \file{\jobname-{{v}}.qns.tex}{\from{\jobname.dtx}{questions,{{v}}}}
+    \file{\jobname-{{v}}.sol.tex}{\from{\jobname.dtx}{questions,solutions,{{v}}}}
+{%- endfor -%}
+{%- else -%}
     \file{\jobname.qns.tex}{\from{\jobname.dtx}{questions}}
     \file{\jobname.sol.tex}{\from{\jobname.dtx}{questions,solutions}}
+{%- endif %}
 }
 \endbatchfile
 %</driver>
@@ -26,8 +36,15 @@
 %<*dtx>
 {{ (cookiecutter.exam_code + ".dtx") | embrace }}
 %</dtx>
+{%- if versions -%}
+{%- for v in versions %}
+%<{{v}}&questions&!solutions>{{ (cookiecutter.exam_code + "-" + v + ".qns.tex") | embrace }}
+%<{{v}}&questions&solutions>{{ (cookiecutter.exam_code + "-" + v + ".sol.tex") | embrace }}
+{%- endfor -%}
+{%- else -%}
 %<questions&!solutions>{{ (cookiecutter.exam_code + ".qns.tex") | embrace }}
 %<questions&solutions>{{ (cookiecutter.exam_code + ".sol.tex") | embrace }}
+{%- endif %}
     [{% now 'local', '%Y/%m/%d' %} v0.0 {{cookiecutter.course_name}}, {{cookiecutter.term_name}}, {{cookiecutter.exam_name}}]
 \title{{cookiecutter.exam_name | embrace }}
 \author{{cookiecutter.instructor_name | replace('. ', '.~') | embrace }}
@@ -192,7 +209,13 @@
 % from exam to exam.
 {% endraw -%}
 % This one was generated {% now 'local', '%c' %} 
+{%- if versions -%}
+{%- for v in versions %}
+%<{{v}}>\def\randomseed{{ random_int() | embrace }}
+{%- endfor -%}
+{%- else -%}
 \def\randomseed{{ random_int() | embrace }}
+{%- endif %}
 {% raw -%}
 \setrandomizerseed{\randomseed}
 \pgfmathsetseed{\randomseed}
