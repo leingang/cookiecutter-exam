@@ -9,6 +9,8 @@
 {%- macro random_int() %}{% for n in [0,1,2,3,4,5,6] %}{{ [0,1,2,3,4,5,6,7,8,9]|random }}{% endfor %}{% endmacro -%}
 {%- if cookiecutter.has_versions == 'y' -%}
 {%- set versions = cookiecutter.versions_csv.split(',') -%}
+{%- else -%}
+{%- set versions = None -%}
 {%- endif -%}
 %<*driver>
 %%!TEX TS-program = dtxmake
@@ -41,7 +43,7 @@
 %<{{v}}&questions&!solutions>{{ (cookiecutter.exam_code + "-" + v + ".qns.tex") | embrace }}
 %<{{v}}&questions&solutions>{{ (cookiecutter.exam_code + "-" + v + ".sol.tex") | embrace }}
 {%- endfor -%}
-{%- else -%}
+{%- else %}
 %<questions&!solutions>{{ (cookiecutter.exam_code + ".qns.tex") | embrace }}
 %<questions&solutions>{{ (cookiecutter.exam_code + ".sol.tex") | embrace }}
 {%- endif %}
@@ -213,7 +215,7 @@
 {%- for v in versions %}
 %<{{v}}>\def\randomseed{{ random_int() | embrace }}
 {%- endfor -%}
-{%- else -%}
+{%- else %}
 \def\randomseed{{ random_int() | embrace }}
 {%- endif %}
 {% raw -%}
