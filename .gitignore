@@ -40,3 +40,4 @@ luac.out
 *.hex
 
 __pycache__/local_extensions.cpython-311.pyc
+.DS_Store
