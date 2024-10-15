@@ -83,6 +83,8 @@
 {% raw -%}
 \setrandomizerseed{\randomseed}
 \pgfmathsetseed{\randomseed}
+\directlua{math.randomseed(token.get_macro("randomseed"))}
+\usepackage{luacode}
 
 
 \newcommand{\tf}[1][{}]{%
