@@ -11,7 +11,8 @@
     "versions_csv" : "{% if cookiecutter.has_versions == 'y' %}A,B,C{% endif %}",
     "bundle_name": "",
     "_copy_without_render": [
-        "support/*.cls"
+        "support/*.cls",
+        "vc.lua"
     ],
     "_extensions": ["local_extensions.localize_date", "local_extensions.embrace"]
 }
