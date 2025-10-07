@@ -1,6 +1,17 @@
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{nyuexam}
+%
+% Class options: allow selecting whether to use the NYU font bundle via
+% fontspec (system-installed fonts) or fall back to the free fonts
+% (charter + montserrat). By default we use the free fonts. Pass the
+% option `nyufonts' to enable the fontspec-based NYU fonts; pass
+% `freefonts' to explicitly select the free fonts (this is the default).
+\newif\ifnyuexam@usenyufonts
+\nyuexam@usenyufontsfalse % default -> use free fonts
+\DeclareOption{nyufonts}{\nyuexam@usenyufontstrue}
+\DeclareOption{freefonts}{\nyuexam@usenyufontsfalse}
 
+% Pass any unknown options on to the exam class
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{exam}}
 \ProcessOptions\relax
 \LoadClass[11pt]{exam}
@@ -40,18 +51,46 @@
 
 
 \usepackage{xcolor-nyu22}
-% \usepackage{fontspec}
-% \setmainfont{Frank Ruhl Libre}[
-%     ItalicFont=*,
-%     ItalicFeatures={FakeSlant},
-%     SmallCapsFont={Latin Modern Roman Caps}
-% ]
-% \setsansfont{Gotham Book}[
-%     BoldFont=Gotham Medium,
-%     ItalicFont=Gotham Book Italic
-% ]
-\usepackage{charter}
-\usepackage{montserrat}
+\RequirePackage{iftex}
+% Font selection: if class option `fontspec' is passed and the engine
+% supports fontspec (XeLaTeX or LuaLaTeX), load fontspec and user fonts.
+% Otherwise fall back to the free fonts (charter + montserrat).
+\ifnyuexam@usenyufonts
+    % Detect XeTeX or LuaTeX using the `iftex' package; it provides
+    % the primitive conditional \iftutex which is true for both XeTeX
+    % and LuaTeX.
+    \iftutex
+        \RequirePackage{fontspec}
+        \setmainfont{Frank Ruhl Libre}[
+            ItalicFont=*,
+            ItalicFeatures={FakeSlant},
+            SmallCapsFont={Latin Modern Roman Caps}
+        ]
+        \setsansfont{NYU Perstare}[
+        FontFace={l}{n}{* Light},
+        FontFace={l}{it}{* Light Italic},
+        FontFace={sb}{n}{* Medium},
+        FontFace={sb}{it}{* Medium Italic},
+        FontFace={b}{n}{* Bold},
+        FontFace={b}{it}{* Bold Italic},
+        UprightFont=* Regular,
+        BoldFont=* Medium,
+        ItalicFont=* Italic,
+        BoldItalicFont=* Medium Italic,
+        SmallCapsFont=Montserrat-Medium.otf, SmallCapsFeatures={Letters=SmallCaps},
+        BoldFeatures={SmallCapsFont=Montserrat-Bold.otf},
+        ]
+    \else
+    % pdfLaTeX cannot use fontspec; warn and fall back
+    \PackageWarning{nyuexam}{Option `nyufonts' requested but fontspec is only available with XeTeX/LuaTeX. Falling back to charter + montserrat.}
+        \RequirePackage{charter}
+        \RequirePackage{montserrat}
+    \fi
+\else
+    % Default free fonts for pdfLaTeX and others
+    \RequirePackage{charter}
+    \RequirePackage{montserrat}
+\fi
 \headrule% head rule across non-cover pages
 \coverrunningheadrule% head rule non-first cover pages
 \xpatchcmd{\run@fullhead}{\hrule}{\color{NyuViolet}\hrule}{}{\PatchFailed}

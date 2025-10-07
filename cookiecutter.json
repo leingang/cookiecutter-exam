@@ -7,7 +7,8 @@
     "term_name" : "",
     "site_id" : "",
     "number_copies" : 45,
-    "has_versions" : "n",
+    "use_nyu_fonts": true,
+    "has_versions" : false,
     "versions_csv" : "{% if cookiecutter.has_versions == 'y' %}A,B,C{% endif %}",
     "bundle_name": "",
     "_copy_without_render": [

@@ -33,6 +33,9 @@
 %<*questions>
 \documentclass[addpoints
 %<solutions>,answers
+{% if cookiecutter.use_nyu_fonts -%}
+,nyufonts
+{%- endif %}
 ]{{ bgroup }}nyuexam{{ egroup }}
 \ProvidesFile
 %<*dtx>
