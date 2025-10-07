@@ -17,6 +17,8 @@ This will generate an `l3build` module.
 
 * `exam_date` (YYYY-MM-DD): The date of the exam
 
+* `use_nyu_fonts` [y/n]: Use the NYU fonts NYU Perstare and Frank Ruhl Libre. User is in charge of downloading and installing these fonts.
+
 * `has_versions`: Set this to `y` if you want several versions of the same exam.
 
 * `versions_csv`: A comma-separated string list of the version names. They will
