@@ -2,6 +2,7 @@
     "exam_code" : "mt1",
     "exam_name" : "Midterm Examination I",
     "exam_date" : "{% now 'local', '%Y-%m-%d' %}",
+    "exam_duration" : 70,
     "course_name" : "",
     "instructor_name" : "",
     "term_name" : "",

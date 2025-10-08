@@ -140,7 +140,11 @@
     \noindent{\textbf{\uppercase{READ THE FOLLOWING INFORMATION.}}}
     
     \begin{itemize}
-        \item You have \textbf{100 minutes} to finish this exam.
+        \item You have \textbf{
+{%- endraw -%}
+{{ cookiecutter.exam_duration }}{{ " " }} 
+{%- raw -%}        
+        minutes} to finish this exam.
         \item Fixed-response questions on this exam will be graded by computer.
         Please fill in the circles completely and use pencil in case you want to
         change your responses.  
