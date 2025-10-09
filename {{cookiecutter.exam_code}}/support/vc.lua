@@ -1,6 +1,5 @@
 -- This is a Lua script based on the 'vc' shell script for TeX.
 -- The original shell script is Public Domain.
-{% raw %}
 CRLF = "\n"
 
 -- Parse command line options
@@ -166,4 +165,3 @@ end
 -- Main logic
 parse_args(arg)
 query_git_info()
-{% endraw %}

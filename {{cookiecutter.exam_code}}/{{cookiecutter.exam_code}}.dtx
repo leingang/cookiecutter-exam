@@ -198,8 +198,8 @@ FT \(\Box\)
 ]
     \node at (current page.center) {
 {%  endraw -%}
-{%- if versions -%}
 {% set letters = ['A','B','C','D','E'] %}
+{%- if versions -%}
 {%- for v in versions -%}
 %<{{v}}>\includegraphics{{ ("mc_bubble_sheet_" + letters[loop.index0 % 5]) | embrace}}
 {% endfor -%}

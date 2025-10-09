@@ -1,8 +1,3 @@
-{#- This is a Jinja2 template for a latex package.  Both use braces heavily! 
-    We use the raw ... endraw statements to surround untouched latex 
-    and we have to escape literal braces.
--#}
-{%- raw -%}
 \NeedsTeXFormat{LaTeX2e}
 \ProvidesClass{nyuexam}
 %
@@ -217,4 +212,3 @@
 \patchcmd{\numstrqinrange}{\arabic}{\numberstring}{}{\PatchFailed}
 
 \newenvironment{hint}{\par\noindent\textit{Hint.}}{}
-{% endraw %}
