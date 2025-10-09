@@ -7,7 +7,7 @@
 {%- set bgroup = "{" -%}
 {%- set egroup = "}" -%}
 {%- macro random_int() %}{% for n in [0,1,2,3,4,5,6] %}{{ [0,1,2,3,4,5,6,7,8,9]|random }}{% endfor %}{% endmacro -%}
-{%- if cookiecutter.has_versions == 'y' -%}
+{%- if cookiecutter.has_versions -%}
 {%- set versions = cookiecutter.versions_csv.split(',') -%}
 {%- else -%}
 {%- set versions = None -%}
@@ -105,10 +105,23 @@
 \usepackage{discrete}
 \usetikzlibrary{discrete}
 
-\usepackage{enumitem}
+{%- endraw -%}
+{%- if cookiecutter.icons_package == 'marvosym' -%}
+{%- raw %}
 \let\Cross\relax
-\usepackage{marvosym} %\StopSign
-
+\usepackage{marvosym} %\Stopsign
+\newcommand{\iconstop}{\Stopsign}
+{% endraw -%}
+{%- elif cookiecutter.icons_package == 'fontawesome5' -%}
+{%- raw %}
+\usepackage{fontawesome5}
+\newcommand{\iconstop}{\faHandPaper[regular]}
+{% endraw -%}
+{%- else %}
+% No icons package detected. Probably gonna get an error later on.
+{% endif -%}
+{%- raw -%}
+\newcommand{\mystop}{\raisebox{-0.5\totalheight}{\fontsize{50}{60}\color{Magenta}\selectfont\iconstop}}
 
 \begin{document}
 
@@ -148,26 +161,13 @@
         \item Fixed-response questions on this exam will be graded by computer.
         Please fill in the circles completely and use pencil in case you want to
         change your responses.  
-    
-        % \begin{center}
-        %     \begin{tabular}{ccc} 
-        %         \fbox{\includegraphics{omr2lt}}
-        %         & \fbox{\raisebox{0.5ex}{\includegraphics{omrgood}}}
-        %         & \fbox{\raisebox{-1ex}{\includegraphics{omrnox}}} \\
-        %         NO & YES & NO \\
-        %         Too light & & No crossouts
-        %     \end{tabular}
-        % \end{center}
-    
-        % Please do not write over the four dots at the corners of the pages, or the code
-        % at the top of each page.
         \item Calculators, books, notes, blank scrap paper, and other aids are not allowed.
         \item You may use the backs of the pages or the extra pages for scratch work.  
         \textbf{\emph{Do not unstaple or remove pages}}.
     \end{itemize}
 
     
-    \newcommand{\mystop}{\raisebox{-0.5\totalheight}{\fontsize{50}{60}\color{Magenta}\selectfont\Stopsign}}
+    
     {\noindent\mystop
     \hfill \textbf{\uppercase{Do not begin this exam until signaled to do so.}}
     \hfill \mystop}
@@ -186,6 +186,53 @@ CI: \hrulefill\
 Fin: \hrulefill\ 
 FT \(\Box\)
 \examcleardoublepage
+{% endraw -%}
+{%- if cookiecutter.use_bubble_sheet -%}
+{%- raw -%}
+\ifprintanswers\else
+\thispagestyle{empty}
+\begin{tikzpicture}[
+    overlay,
+    remember picture,
+    whiteout/.style={draw=none,fill=white}
+]
+    \node at (current page.center) {
+{%  endraw -%}
+{%- if versions -%}
+{% set letters = ['A','B','C','D','E'] %}
+{%- for v in versions -%}
+%<{{v}}>\includegraphics{{ ("mc_bubble_sheet_" + letters[loop.index0 % 5]) | embrace}}
+{% endfor -%}
+{%- else %}
+\includegraphics{{ ("mc_bubble_sheet_" + letters[0]) | embrace}}
+{% endif %}
+{%  raw -%}
+};
+    % White out unused rows to avoid confusion
+    % LL = lower left corner of bubble matrix
+    % UR = upper right corner of bubble matrix
+    % the origin is the upper left corner of the page's printed area
+    % (1 inch in each direction from upper left corner of the stock?)
+    \coordinate (LL) at (-0.5in,-9in);
+    \coordinate (UR) at (6.5in,-1.75in); 
+    \coordinate (UL) at (LL |- UR);
+    \coordinate (LR) at (LL -| UR);
+    % white out columns 2-4
+    \draw[whiteout] ([xshift=1.6in]LL) rectangle (UR);
+    % white out blanks 15--25
+    % this needs to be adjusted manually
+    % 1.5in is good for 21--25 (leaving 1--20 visible)
+    % 0.24in per Q and one extra for every five?
+    %: SOMEDAY: Use the Adobe Acrobat measuring tool to make this accurate 
+    \draw[whiteout] (LL) rectangle ++(1.5in,3.12in);
+    \node[draw,align=center,font={\bfseries\sffamily\large},Magenta]
+        at (3.25in,-3in)
+        {\uppercase{Put your name\\on this page too}};
+\end{tikzpicture}
+\fi
+{%- endraw -%}
+{%- endif -%}
+{%- raw %}
 \end{coverpages}
 
 \fullwidth{\section*{Multiple Choice}
