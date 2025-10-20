@@ -42,3 +42,5 @@ luac.out
 __pycache__/local_extensions.cpython-311.pyc
 .DS_Store
 __pycache__/local_extensions.cpython-313.pyc
+
+build

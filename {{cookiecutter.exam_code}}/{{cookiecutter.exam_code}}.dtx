@@ -36,6 +36,9 @@
 {% if cookiecutter.use_nyu_fonts -%}
 ,nyufonts
 {%- endif %}
+{% if cookiecutter.use_bubble_sheet -%}
+,nocirclechoices
+{%- endif -%}
 ]{{ bgroup }}nyuexam{{ egroup }}
 \ProvidesFile
 %<*dtx>
@@ -235,10 +238,10 @@ FT \(\Box\)
 {%- raw %}
 \end{coverpages}
 
-\begin{EnvFullWidth}
+\begin{EnvFullwidth}
 \section*{Multiple Choice}
 {%- endraw -%}
-{% if cookiecutter.use_bubble_sheet %-}
+{% if cookiecutter.use_bubble_sheet -%}
 {%- raw %}
 \begin{instructions}%
     Shade the circles corresponding to your answers to the multiple choice
@@ -247,7 +250,7 @@ FT \(\Box\)
     No explanation is required.
 \end{instructions}
 {%- endraw -%}
-{% else %-}
+{% else -%}
 {%- raw %}
 \begin{instructions}%
     Shade the circles corresponding to your answers to the multiple choice
@@ -268,9 +271,9 @@ FT \(\Box\)
     for the multiple choice questions.
 \end{instructions}
 {%- endraw -%}
-{% endif %-}
+{% endif -%}
 {%- raw %}
-\end{EnvFullWidth}
+\end{EnvFullwidth}
 
 
 \begin{questions}
