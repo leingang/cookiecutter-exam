@@ -279,393 +279,79 @@ FT \(\Box\)
 \begin{questions}
     % \vspace*{-0.6in}
 
+{% endraw -%}
+{%- set num_mcq = cookiecutter.num_mcq | int -%}
+{%- if (num_mcq > 0) -%}    
     \begingradingrange{mc}
-    
-    \question[\mcpoints]\label{mcq-converse} The statement “All odd numbers are
-        prime” is the \fillin[converse] of the statement “All prime
-        numbers are odd.”
-        \begin{randomizechoices}
-            \CorrectChoice{converse}
-            \choice{contrapositive}
-            \choice{inverse}
-            \choice{covariant}
-            \choice{contravariant}
-        \end{randomizechoices}
-
-
-    \question[\mcpoints]\label{mcq-contrapositive} The \fillin[contrapositive] of
-        a statement is always equivalent to the original statement.
-        \begin{randomizechoices}
-            \CorrectChoice{contrapositive}
-            \choice{converse}
-            \choice{inverse}
-            \choice{covariant}
-            \choice{contravariant}
-        \end{randomizechoices}
-
-
-    \question[\mcpoints]\label{mcq-smallest-counterexample} Which of these is
-        the smallest counterexample to the statement “Every natural number is either
-        even or odd”?
-        \begin{randomizechoices}[keeplast]
-            \choice{\( 0 \)}
-            \choice{\( 1 \)}
-            \choice{\( -1 \)}
-            \choice{\( -\infty \)}
-            \CorrectChoice{There is no smallest counterexample}
-        \end{randomizechoices}
-        \begin{solution}
-            Since the statement is true, there are no counterexamples!
-        \end{solution}
-
-
-    \question[\mcpoints]\label{mcq-pmi} In proving a statement
-        by induction, which of these is NOT a step in the proof?
-        \begin{randomizechoices}
-            \choice{Construct the set $A$ of all natural numbers satisfying the statement.}
-            \choice{Prove $0 \in A$.}
-            \choice{Prove $\forall n \in \N,\ n \in A \implies n+1 \in A$.}
-            \CorrectChoice{Prove $n+1 \in A$.}
-            \choice{Invoke the Principle of Mathematical Induction to conclude $A = \N$.}
-        \end{randomizechoices}
-        \begin{solution}
-            We must first assume $n \in A$ for some $n$, then prove $n+1 \in A$.
-        \end{solution}
-
-
-    \question[\mcpoints]\label{mcq-pci}% Scheinerman, Exercise 22.16(e)
-        Consider the sequence $(a_n)$ defined by $a_0 = 1$, $a_1 = 4$,
-        and $a_n = 4(a_{n-1}-a_{n-2})$ for all $n \geq 2$.
-        To prove $a_n = (n+1)2^n$, we should use \fillin.
-        \begin{randomizechoices}
-            \CorrectChoice{Strong induction with two base cases}
-            \choice{Regular induction with two base cases}
-            \choice{Strong induction with one base case}
-            \choice{Regular induction with one base case}
-            \choice{Transfinite induction with one base case}
-        \end{randomizechoices}
-        \begin{solution}
-            Since the inductive step will require a “lookback” of two steps, 
-            we should use strong induction and two base cases.
-        \end{solution}
-
-
-    \question[\mcpoints]\label{mcq-function}
-        Suppose $A$ and $B$ are sets and $R$ is a relation from $A$ to $B$.
-        Which of these conditions MUST be satisfied for $R$ to be a function?
+{% for i in range(0,num_mcq) %}    
+    \begin{question}[{{ cookiecutter.points_per_mcq }}]
+        Stem
         \begin{choices}
-            \CorrectChoice{$\forall a,b,c$, $(a,b) \in R \land (a,c)\in R \implies b=c$}
-            \choice{$\forall a \in A$, $\exists b\in B$ such that $(a,b) \in R$}
-            \choice{$\forall b \in B$, $\exists a\in A$ such that $(a,b) \in R$}
-            \choice{$\forall a,b,c$, $(a,b) \in R \land (b,c)\in R \implies (a,c)\in R$}
-            \choice{$\forall a,b,c$, $(a,b) \in R \land (c,b)\in R \implies a=c$}
+            \CorrectChoice{}
+            \choice{}
+            \choice{}
+            \choice{}
+            \choice{}
         \end{choices}
-        \begin{solution}
-            \begin{itemize}
-                \item $\forall a,b,c$, $(a,b) \in R \land (a,c)\in R \implies
-                    b=c$ is the “vertical line test”; i.e., the fundamental
-                    condition for a relation to be a function.
-                \item If $R$ is a function, $\forall a \in A$, $\exists b\in B$
-                    such that $(a,b) \in R$ is the condition that $R$ is a
-                    function from $A$ to $B$.
-                \item If $R$ is a function from $A$ to $B$, $\forall b \in B$,
-                    $\exists a\in A$ such that $(a,b) \in R$ is the condition
-                    that $R$ is onto $B$.
-                \item If $R$  is a function, $\forall a,b,c$, $(a,b) \in R \land
-                    (c,b)\in R \implies a=c$ is the condition that $R$ be injective.
-            \end{itemize}
-        \end{solution}
-    
-    \question[\mcpoints]\label{mcq-function-pairs}
-        Let $R = \set{(1,2),(3,3),(b,2)}$
-        Which value of $b$ would NOT make $R$ into a function?
-        \begin{randomizechoices}
-            \CorrectChoice{\( 3 \)}
-            \choice{\( 1 \)}
-            \choice{\( 4 \)}
-            \choice{\( 2 \)}
-            \choice{\( 0 \)}
-        \end{randomizechoices}
-        \begin{solution}
-            If $b=0$, $b=2$, or $b=4$, there are three pairs in $R$ with distinct first elements. 
-            If $b=1$, $R = \set{(1,2),(3,3)}$ and that is a function.
-            If $b=3$, however, we have $(3,3)$ and $(3,2)$ in $R$.
-        \end{solution}
-        
-
-    \question[\mcpoints]\label{mcq-counting-funcs}
-        Let $A = \set{1,2,3,4}$ and $B = \set{4,5}$.
-        How many injective functions are there from $B$ to $A$?
-        \begin{randomizechoices}
-            \CorrectChoice{\( 12 \)}
-            \choice{\( 0 \)}% number of injective functions $B \to A$
-            \choice{\( 16 \)}% number of functions $B \to A$
-            \choice{\( 14 \)}% number of surjective functions $A \to B$
-            \choice{\( 24 \)}% number of injective functions $A \to A$
-        \end{randomizechoices}
-        \begin{solution}
-            By Theorem 24.26(2), the number is $(4)_2 = 4 \times 3 = 12$.
-        \end{solution}
-
-        
-    \question[\mcpoints]\label{mcq-surjective}
-        Which of these functions \( f \from \Z \to \Z \) is surjective?
-        \begin{randomizechoices}
-            \CorrectChoice{\( f(x) = -x + 1 \)}
-            \choice{\( f(x) = 2x+1 \) }
-            \choice{\( f(x) = x^3 \)}
-            \choice{\( f(x) = |x| \)}
-            \choice{\( f(x) = x^2 \)}
-        \end{randomizechoices}
-
-        
-    \question[\mcpoints]\label{mcq-php} Consider the statement “In any set
-        of five integers, there must be at least two whose difference is
-        divisible by 4.”
-
-        This most directly follows from the \fillin.
-        \begin{randomizechoices}
-            \CorrectChoice{Pigeonhole Principle}
-            \choice{Addition Rule}
-            \choice{Multiplication Rule}
-            \choice{Binomial Theorem}
-            \choice{Erd\H os-Szekeres Theorem}
-        \end{randomizechoices}
-        \begin{solution}
-            Consider the function which assigns to each of the integers its
-            equivalence class in the congruence-modulo-$4$ relation. There
-            are only four classes, so by the \emph{pigeonhole principle} two
-            of the integers must belong to the same one. By definition,
-            their difference is divisible by $4$.
-        \end{solution}
-        
+    \end{question}
+{% endfor %}
     \endgradingrange{mc}
-    
-    \newpage%
-    \begingradingrange{cata}
+    \examcleardoublepage%
+{% endif %}
 
-    \fullwidth{
-        
+{%- set num_cata = cookiecutter.num_cata | int -%}
+{%- if (num_cata > 0) -%}
+\begin{EnvFullwidth}
     \section*{Check All That Apply}
     
     \begin{instructions}%
-        In the next four questions, more than one option \textbf{may} be correct.
+        In the next \numstrqinrange{cata} questions, more than one option \textbf{may} be correct.
         You must select all correct options and none of the incorrect options to
         earn full credit.
-    \end{instructions}}
+    \end{instructions}    
+\end{EnvFullwidth}
 
+    \begingradingrange{cata}
+{% for i in range(0,num_cata) %}    
+    \begin{question}[{{ cookiecutter.points_per_cata }}]
+        Stem
+        \begin{choices}
+            \CorrectChoice{}
+            \CorrectChoice{}
+            \choice{}
+            \choice{}
+            \choice{}
+        \end{choices}
+    \end{question}
+{% endfor %}
+    \endgradingrange{cata}
+    \examcleardoublepage%
+{% endif %}
 
-        \question[5]\label{msq-wop}
-            Which of these sets are well-ordered?
-            \begin{randomizechoices}
-                \CorrectChoice{\( \setst{x \in \Z}{x \geq 0} \)}
-                \CorrectChoice{\( \setst{x \in \Z}{x > 0} \)}
-                \CorrectChoice{\( \setst{x \in \Z}{x \geq 0,\ 2 \mid x} \)}
-                \choice{\( \setst{x \in \Z}{x \neq 0} \)}
-                \choice{\( \setst{x \in \Q}{x > 0} \)}
-            \end{randomizechoices}
-            \begin{solution}
-                An ordered set is called \textbf{well-ordered} provided every nonempty subset has a least element.
-                \begin{itemize}
-                    \item \( \setst{x \in \Z}{x \geq 0} = \mathbb{N}\) is
-                        well-ordered, by axiom.
-                    \item \( \setst{x \in \Z}{x > 0} \) is a subset of \(\N\),
-                        so it's also well-ordered.
-                        \item \( \setst{x \in \Z}{x \geq 0,\ 2 \mid x} \) is a subset of \(\N\).
-                        \item \( \setst{x \in \Z}{x \neq 0} \) is not well-ordered;
-                        it contains arbitrarily large negative numbers.
-                    \item \( \setst{x \in \Q}{x > 0} \) is not well-ordered;
-                        it contains arbitrarily \emph{small} positive numbers, but not zero.
-                        So the set itself has no minimum.
-                \end{itemize}
-            \end{solution}
-
-
-        \question[5]\label{msq-compositions} Suppose $S$ is a finite set, $n
-            \colon 2^S\to \N$ is the “cardinality” function defined by $n(A) =
-            |A|$, and $c\colon 2^S \to 2^S$ is the “complement” function defined
-            by $c(A) = S \setdiff A$.  
-            Which of these compositions is defined?
-            \begin{randomizechoices}
-                \CorrectChoice{$n \comp c$}
-                \CorrectChoice{$c \comp c$}
-                \CorrectChoice{$\mathord{\mathrm{id}}_{\N}\comp n$}
-                \choice{$n \comp \mathord{\mathrm{id}}_{\N}$}% caught 33%!
-                \choice{$c \comp n$}% caught 23%
-            \end{randomizechoices}
-            \begin{solution}
-                In order for the composition $f \comp g$ to be defined, the range of $g$ needs to be contained 
-                in the domain of $f$. Remember that the composition goes right-to-left.                    
-            \end{solution}
-
-
-        \question[5]\label{msq-injective}
-            Which of these are injective functions?
-            \begin{randomizechoices}
-                \CorrectChoice{\( f \from \N \to \N$, $f(x) = x^2 \)}
-                \CorrectChoice{\( \IdentityFunction[\Z] \)}
-                \CorrectChoice{\( \emptyset \)}
-                \choice{\( f \from \Z \to \Z$, $f(x) = x^2 \)}% not injective on this domain
-                \choice{\( \set{(1,2), (2,3), (3,1), (1,4)} \)}% not a function
-            \end{randomizechoices}
-            \begin{solution}
-                \begin{itemize}
-                    \item \( f \from \N \to \N$, $f(x) = x^2 \) is injective: if
-                        $a^2 = b^2$ for nonnegative integers $a$ and $b$, then
-                        $a=b$.
-                    \item \( \IdentityFunction[\Z] \) is injective: If $(a,b)
-                        \in \IdentityFunction[\Z]$, then $a=b$. So if two pairs
-                        $(a,b)$ and $(c,b)$ are in $\IdentityFunction[\Z]$, then
-                        $a=b=c$.
-                    \item \( \emptyset \) is injective, vacuously.
-                    \item \( f \from \Z \to \Z$, $f(x) = x^2 \) is not
-                        injective, because it contains the pairs $(-1,1)$ and
-                        $(1,1)$.
-                    \item \( \set{(1,2), (2,3), (3,1), (1,4)} \) is not a
-                        function, let alone an injective function.
-                \end{itemize}
-            \end{solution}
-
-
-        \question[5]\label{msq-composition}
-            Suppose \( f = \set{ (1,2), (2,3), (3,4) }\)
-            and \( g = \set{ (1,3), (2,4), (3,2) (4,1) }\).
-            Which of these pairs are in \( g \comp f \)?
-            \begin{randomizechoices}
-                \CorrectChoice{$(1,4)$}
-                \CorrectChoice{$(2,2)$}
-                \choice{$(1,2)$}
-                \choice{$(2,4)$}
-                \choice{$(3,3)$}
-            \end{randomizechoices}
-            \begin{solution}
-                We have \(
-                    g \comp f = \set{
-                        (1,4), (2,2), (3,1)
-                    }  
-                \)
-            \end{solution}
-
-        \endgradingrange{cata}
-
-
-        \newpage
-        \begingradingrange{tfj}
-    \fullwidth{\section*{True/False}
+{%- set num_tf = cookiecutter.num_tf | int -%}
+{%- if (num_tf > 0) -%}
+\begin{EnvFullwidth}
+    \section*{True/False}
+    
     \begin{instructions}%
-        In each of the next four problems, indicate if the statement is true (T) or false (F).
+        In the next \numstrqinrange{tfj} questions, indicate if the statement is true (T) or false (F).
         If the statement is true, give a short justification.
         If the statement is false, provide a counterexample or explain why.
-    \end{instructions}}
+    \end{instructions}    
+\end{EnvFullwidth}
 
-        \question[3]
-            \tf[T] Every integer is either even or odd.
+    \begingradingrange{tfj}
+{% for i in range(0,num_tf) %}    
+    \begin{question}[{{ cookiecutter.points_per_tf }}]
+        Statement
+        \fillin
+    \end{question}
+{% endfor %}
+    \endgradingrange{tfj}
+    \examcleardoublepage%
+{% endif %}
+{%- raw -%}
 
-            \begin{solution}
-                This is Corollary~21.2 from the textbook, proved in class.
-            \end{solution}
-        \vspace{\stretch{1}}
-
-        \question[3]\tf[F]
-            Some statements cannot be proven with regular induction;
-            they require strong induction.
-
-            \begin{solution}
-                Any statement that can be proven with strong induction can also
-                be proven with regular induction.
-            \end{solution}
-
-        \vspace{\stretch{1}}
-        
-        \newpage\question[3]\tf[F] 
-        If $f$ and $g$ are bijections from a set $A$ to itself, then $f \comp g = g \comp f$.
-            
-            \begin{solution}
-                A counterexample is $A = \set{1,2,3}$, $f =
-                \set{(1,2),(2,3),(3,1)}$ and $g = \set{(1,2),(2,1),(3,3)}$. Then
-                $f \comp g = \set{(1,3),(2,2),(3,1)}$ and $g \comp f =
-                \set{(1,1),(2,3),(3,2)}$.
-            \end{solution}
-
-        \vspace{\stretch{1}}
-
-        \question[3]\tf[T]
-            Zero is a natural number.
-
-            \begin{solution}
-                We have defined (see Appendix~D of the textbook) $\N$ to be the
-                set of all nonnegative integers.
-            \end{solution}
-        \vspace{\stretch{1}}   
-        \endgradingrange{tfj}
-
-    \examcleardoublepage
-    \begingradingrange{sa}%
-    \fullwidth{\section*{Short Answer}
-    \begin{instructions}%
-        In each of the following, write the \textbf{beginning} (first one or two sentences) of a
-        proof by contrapositive or contradiction, as indicated.
-        % \begin{itemize}
-        %     \item In the case of a proof by \textbf{contrapositive}, you should include what is
-        %     to be assumed and what you wish to prove.
-        %     \item In the case of a proof by \textbf{contradiction}, you should include what is to
-        %     be assumed for the sake of contradiction.
-        % \end{itemize}
-        Any terms or symbols you don't recognize are made up for the purpose of this
-        problem.
-    \end{instructions}}
-
-        \question[3] For all integers $x$ and $y$, if $x$ and $y$ are weak, then
-    $x \oplus y$ is weak. (contradiction)
-
-        Suppose for the sake of contradiction that $\dots$
-        \begin{solutionorlines}[\stretch{1}]
-            there exist integers $x$ and $y$ such that $x$ and $y$ are weak 
-            but $x \oplus y$ is not weak.
-        \end{solutionorlines}
-    
-        \question[3] For all sets $A$, 
-            if $A \ltimes A = \emptyset$, then $A = \emptyset$. (Contrapositive)
-
-
-        Suppose that $\dots$
-        \begin{solutionorlines}[\stretch{1}]
-            \( A \neq \emptyset \)
-        \end{solutionorlines}
-        We will show $\dots$
-        \begin{solutionorlines}[\stretch{1}]
-            \( A \ltimes A \neq \emptyset \).
-        \end{solutionorlines}
-
-        \newpage
-        \question[3]
-            If $x$ is a real number such that $x \mathrel{\square} y  = \epsilon$,
-            for all real numbers $y$, then $x = \epsilon$. (contrapositive)
-
-            Suppose that $\dots$
-            \begin{solutionorlines}[\stretch{1}]
-                $x$ is a real number not equal to $\epsilon$.
-            \end{solutionorlines}
-            We will show $\dots$
-            \begin{solutionorlines}[\stretch{1}]
-                There exists a real number $y$ such that $x \mathrel{\square} y
-                \neq \epsilon$.
-            \end{solutionorlines}
-            
-        \question[3] 
-            For all grains $x$ there exists a grain $y$ such that $x \sqcup y$ is total.
-        (contradiction)
-    
-            Suppose for the sake of contradiction that $\dots$
-            \begin{solutionorlines}[\stretch{1}]
-                there exist a grain $x$ such that for all grains $y$,
-                $x \sqcup y$ is not total.
-            \end{solutionorlines}
-                
-    \endgradingrange{sa}%
-        
-
-    \checkoddpage\ifoddpage\insertblankpage\fi\newpage
     \begingradingrange{fr}%
     \fullwidth{\section*{Free Response}
 
