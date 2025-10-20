@@ -235,7 +235,20 @@ FT \(\Box\)
 {%- raw %}
 \end{coverpages}
 
-\fullwidth{\section*{Multiple Choice}
+\begin{EnvFullWidth}
+\section*{Multiple Choice}
+{%- endraw -%}
+{% if cookiecutter.use_bubble_sheet %-}
+{%- raw %}
+\begin{instructions}%
+    Shade the circles corresponding to your answers to the multiple choice
+    questions on the bubble sheet. 
+%%    Pages \pageref{begin-fixed-response}--\pageref{end-fixed-response} will not be read.
+    No explanation is required.
+\end{instructions}
+{%- endraw -%}
+{% else %-}
+{%- raw %}
 \begin{instructions}%
     Shade the circles corresponding to your answers to the multiple choice
     questions, as in the example below:
@@ -253,7 +266,13 @@ FT \(\Box\)
     \medskip
     No explanation is required to be shown and no partial credit will be given
     for the multiple choice questions.
-\end{instructions}}
+\end{instructions}
+{%- endraw -%}
+{% endif %-}
+{%- raw %}
+\end{EnvFullWidth}
+
+
 \begin{questions}
     % \vspace*{-0.6in}
 
