@@ -5,9 +5,16 @@
   \addtocounter{footnote}{-1}%
   \endgroup
 }
+\RequirePackage{etoolbox}
 \usepackage{readprov}
 \usepackage{draftwatermark}
 \input{vc}
+
+\newif\ifmarkversioninfootnote
+\markversioninfootnotefalse
+\DeclareOption{infootnote}{\markversioninfootnotetrue}
+\DeclareOption{notinfootnote}{\markversioninfootnotefalse}
+\ProcessOptions\relax
 
 \ifdefstring{\VCModified}{1}{
     \DraftwatermarkOptions{scale=0.5}
@@ -20,7 +27,9 @@
     }
 }
 \gdef\VCModifiedText{\textcolor{Magenta}{with local modifications}}%
-% \appto{\maketitle}{\blfootnote{%
-%     Version \UseVersionOf{\jobname.tex},
-%     \UseDateOf{\jobname.tex},
-%     Revision \VCRevisionMod.}}
+\ifmarkversioninfootnote
+    \appto{\maketitle}{\blfootnote{%
+        Version \UseVersionOf{\jobname.tex},
+        \UseDateOf{\jobname.tex},
+        Revision \VCRevisionMod.}}
+\fi
