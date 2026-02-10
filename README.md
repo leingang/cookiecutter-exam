@@ -1,6 +1,8 @@
 # cookiecutter-exam
 Cookiecutter for an l3build module for an exam
 
+**This repository is archived.** The cookiecutter has been merged into [`cookiecutter-coursedocs`](https://github.com/leingang/cookiecutter-coursedocs)
+
 ## Usage
 
 To create a new exam:
